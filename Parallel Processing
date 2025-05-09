@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""
+Parallel Processing Supplement – 2
+
+Contains:
+- print_with_delay(list): sequentially prints each item with 1s delay
+- average_chunks(cube): splits an N×N×N numpy array into 8 equal subcubes and returns their means
+- echo_strings(strings): calls system ‘echo’ on each string
+"""
+
+import time
+import subprocess
+import numpy as np
+import shlex
+
+def print_with_delay(items):
+    """
+    Print each element of `items` on its own line,
+    pausing 1 second between prints.
+    """
+    for item in items:
+        print(item)
+        time.sleep(1)
+
+def average_chunks(cube: np.ndarray) -> list[float]:
+    """
+    Split a cube-shaped 3D array into 8 equally sized subcubes
+    (by halving each dimension) and return a list of their averages
+    in (x-low, y-low, z-low), (x-low, y-low, z-high), … order.
+    """
+    n = cube.shape[0]
+    mid = n // 2
+    avgs = []
+    for x in (0, mid):
+        for y in (0, mid):
+            for z in (0, mid):
+                sub = cube[x:x+mid, y:y+mid, z:z+mid]
+                avgs.append(float(sub.mean()))
+    return avgs
+
+def echo_strings(strings):
+    """
+    For each string in `strings`, invoke the system 'echo' command.
+    """
+    for s in strings:
+        cmd = f"echo {shlex.quote(s)}"
+        subprocess.run(cmd, shell=True, check=True)
+
+if __name__ == "__main__":
+    # Example demo (not tested):
+    sample = ["hello", "world"]
+    print_with_delay(sample)
+    arr = np.arange(8).reshape((2,2,2))
+    print("Chunk means:", average_chunks(arr))
+    echo_strings(["done"])
